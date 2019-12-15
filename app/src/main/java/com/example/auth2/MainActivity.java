@@ -23,6 +23,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     ImageView image;
     ProgressBar progressBar;
     GoogleSignInClient mGoogleClient;
+    DatabaseReference dbRef;
+    User userdat;
 
 
     @Override
@@ -48,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         text = findViewById(R.id.TextTitle);
         image = findViewById(R.id.image_firebase);
         progressBar = findViewById(R.id.progress_circular);
-
+        userdat = new User();
         mAuth = FirebaseAuth.getInstance();
 
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions
@@ -66,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
             FirebaseUser user = mAuth.getCurrentUser();
             updateUI(user);
         }
+
+        dbRef = FirebaseDatabase.getInstance().getReference().child("user");
+
     }
 
     void SignInGoogle(){
@@ -126,6 +133,16 @@ public class MainActivity extends AppCompatActivity {
                     name = userInfo.getDisplayName();
                 }
             }
+
+            userdat.setNama(user.getDisplayName());
+            if (userdat.getNama() == null){
+                userdat.setNama("null");
+            }
+            userdat.setEmail(user.getEmail());
+            dbRef.child(user.getUid()).setValue(userdat);
+            String test = dbRef.orderByChild("email").equalTo(user.getEmail()).getPath().getBack().toString();
+            System.out.println(test);
+            Toast.makeText(MainActivity.this, "SUCCESS", Toast.LENGTH_SHORT).show();
 
             text.append("Info : \n");
             text.append(name + "\n");

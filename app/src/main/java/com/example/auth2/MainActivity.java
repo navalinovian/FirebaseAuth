@@ -109,7 +109,14 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("TAG", "signInWithCredential:success");
 
                         FirebaseUser user = mAuth.getCurrentUser();
-                        updateUI(user);
+                        userdat.setEmail(user.getEmail());
+                        dbRef.child(user.getUid()).setValue(userdat);
+//                        String test = dbRef.orderByChild("email").equalTo(user.getEmail()).getPath().getBack().toString();
+//                        System.out.println(test);
+                        Toast.makeText(MainActivity.this, "SUCCESS", Toast.LENGTH_SHORT).show();
+//                        updateUI(user);
+                        Intent intent =  new Intent(this, Main2Activity.class);
+                        startActivity(intent);
                     } else {
                         progressBar.setVisibility(View.INVISIBLE);
 
@@ -138,11 +145,6 @@ public class MainActivity extends AppCompatActivity {
             if (userdat.getNama() == null){
                 userdat.setNama("null");
             }
-            userdat.setEmail(user.getEmail());
-            dbRef.child(user.getUid()).setValue(userdat);
-            String test = dbRef.orderByChild("email").equalTo(user.getEmail()).getPath().getBack().toString();
-            System.out.println(test);
-            Toast.makeText(MainActivity.this, "SUCCESS", Toast.LENGTH_SHORT).show();
 
             text.append("Info : \n");
             text.append(name + "\n");
@@ -164,5 +166,6 @@ public class MainActivity extends AppCompatActivity {
         mGoogleClient.signOut().addOnCompleteListener(this,
                 task -> updateUI(null));
     }
+
 
 }
